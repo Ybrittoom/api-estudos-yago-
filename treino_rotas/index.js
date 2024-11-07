@@ -30,6 +30,7 @@ app.get('/instrumentos/:id', async (req, res) => {
   }
 });
 
+
 app.post('/instrumentos', async (req, res) => {
   try {
     const { nome, tipo } = req.body;
@@ -69,8 +70,45 @@ app.delete('/instrumentos/:id', async (req, res) => {
   }
 });
 
-// Rotas para Alunos, Instrutores e Frequência (similar às rotas de Instrumentos)
-// ...
+// Rotas para Alunos
+
+app.post('/alunos', async (req, res) => {
+  try {
+    const { nome, idade } = req.body;
+    const [result] = await pool.query('INSERT INTO alunos (nome, idade) VALUES (?, ?)', [nome, idade]);
+    res.status(201).json({ message: 'Aluno criado com sucesso', id: result.insertId });
+  } catch (error) {
+    console.error('Erro ao criar o aluno:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
+//Instrutores 
+
+app.post('/instrutores', async (req, res) => {
+  try {
+    const { nome, atividade } = req.body;
+    const [result] = await pool.query('INSERT INTO instrutores (nome, atividade) VALUES (?, ?)', [nome, atividade]);
+    res.status(201).json({ message: 'Instrutor criado com sucesso', id: result.insertId });
+  } catch (error) {
+    console.error('Erro ao criar instrutor:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+ 
+// Frequência 
+app.post('/frequencia', async (req, res) => {
+  try {
+    const { nome, faltas } = req.body;
+    const [result] = await pool.query('INSERT INTO frequencia (nome, faltas) VALUES (?, ?)', [nome, faltas]);
+    res.status(201).json({ message: 'frequência criado com sucesso', id: result.insertId });
+  } catch (error) {
+    console.error('Erro ao criar frequencia:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Servidor ouvindo na porta ${port}`);
