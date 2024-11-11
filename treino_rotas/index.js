@@ -72,7 +72,7 @@ app.delete('/instrumentos/:id', (req, res) => {
   });
 });
 
-/*
+
 // Rotas para Instrumentos
 app.get('/instrumentos/:id', async (req, res) => {
   try {
@@ -127,7 +127,7 @@ app.delete('/instrumentos/:id', async (req, res) => {
   }
 });
 
-*/
+/*
 
 // Rotas para Alunos
 
@@ -143,6 +143,61 @@ app.post('/alunos', async (req, res) => {
 });
 
 
+// Rota para obter todos os instrutores
+app.get('/instrutores', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM instrutores');
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao buscar instrutores');
+  }
+});
+
+// Rota para criar um novo instrutor
+app.post('/instrutores', async (req, res) => {
+  const { nome, atividade} = req.body; // Adapte os campos conforme sua tabela
+  try {
+    const [result] = await pool.query('INSERT INTO instrutores (nome, atividade) VALUES (?, ?)', [nome, atividade]);
+    res.json({ id: result.insertId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao criar instrutor');
+  }
+});
+
+// Rota para atualizar um instrutor
+app.put('/instrutores/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, atividade } = req.body; // Adapte os campos conforme sua tabela
+  try {
+    const [result] = await pool.query('UPDATE instrutores SET nome = ?, atividade = ? WHERE id = ?', [nome, atividade, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Instrutor não encontrado');
+    }
+    res.send('Instrutor atualizado com sucesso');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao atualizar instrutor');
+  }
+});
+
+// Rota para deletar um instrutor
+app.delete('/instrutores/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await pool.query('DELETE FROM instrutores WHERE id = ?', [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Instrutor não encontrado');
+    }
+    res.send('Instrutor deletado com sucesso');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao deletar instrutor');
+  }
+});
+
+/*
 //Instrutores 
 
 app.post('/instrutores', async (req, res) => {
@@ -168,6 +223,7 @@ app.post('/frequencia', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+*/
 
 app.listen(port, () => {
   console.log(`Servidor ouvindo na porta ${port}`);
