@@ -12,10 +12,66 @@ const pool = mysql.createPool({
   database: 'minha_escola'
 });
 
+app.use(cors());
+app.use(bodyParser.json());
 
 // Rotas para Instrumentos
 app.use(express.json());
 
+
+// Rota para obter todos os registros
+app.get('/instrumentos', (req, res) => {
+  pool.query('SELECT * FROM instrumentos', (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Erro ao buscar usuários');
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Rota para criar um novo registro
+app.post('/instrumentos', (req, res) => {
+  const { nome, tipo } = req.body;
+  pool.query('INSERT INTO instrumentos (nome,tipo) VALUES (?, ?)', [nome, tipo], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Erro ao criar usuário');
+    } else {
+      res.json({ id: result.insertId });
+    }
+  });
+});
+
+// Rota para atualizar um registro
+app.put('/instrumentos/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome, tipo } = req.body;
+  pool.query('UPDATE instrumentos SET nome = ?, tipo = ? WHERE id = ?', [nome, tipo, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Erro ao atualizar usuário');
+    } else {
+      res.send('Usuário atualizado com sucesso');
+    }
+  });
+});
+
+// Rota para deletar um registro
+app.delete('/instrumentos/:id', (req, res) => {
+  const { id } = req.params;
+  pool.query('DELETE FROM users WHERE id = ?', [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Erro ao deletar usuário');
+    } else {
+      res.send('Usuário deletado com sucesso');
+    }
+  });
+});
+
+/*
 // Rotas para Instrumentos
 app.get('/instrumentos/:id', async (req, res) => {
   try {
@@ -69,6 +125,8 @@ app.delete('/instrumentos/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
+*/
 
 // Rotas para Alunos
 
