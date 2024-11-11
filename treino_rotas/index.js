@@ -16,10 +16,9 @@ const pool = mysql.createPool({
 
 app.use(cors());
 app.use(bodyParser.json());
-
-// Rotas para Instrumentos
 app.use(express.json());
 
+// Rotas para Instrumentos
 
 // Rota para obter todos os registros
 app.get('/instrumentos', (req, res) => {
