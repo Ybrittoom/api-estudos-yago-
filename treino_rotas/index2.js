@@ -32,15 +32,34 @@ app.get('/instrutores', (req, res) => {
 
 
 app.post('/instrutores', async (req, res) => {
-  const { nome, atividade} = req.body; // Adapte os campos conforme sua tabela
+  const { nome, atividade } = req.body;
+
+  // Validação dos dados (exemplo usando Joi)
+  const schema = Joi.object({
+    nome: Joi.string().required(),
+    atividade: Joi.string().required()
+  });
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
+
   try {
-    const [result] = await pool.query('INSERT INTO instrutores (nome, atividade) VALUES (?, ?)', [nome, atividade]);
+    const [result] = await pool.query(
+      'INSERT INTO instrutores (nome, atividade) VALUES (?, ?)',
+      [nome, atividade]
+    );
     res.json({ id: result.insertId });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erro ao criar instrutor');
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).send('Instrutor já existe');
+    }
+    res.status(500).send('Erro ao criar instrutor: ' + error.message);
   }
 });
+
 
 // Rota para atualizar um instrutor
 app.put('/instrutores/:id', async (req, res) => {
