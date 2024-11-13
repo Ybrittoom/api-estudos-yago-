@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 
 // Conexão com o banco de dados
 const pool = mysql.createPool({
-    host: 'localhost', // Substitua por seu host se necessário
+    host: 'localhost', 
     user: 'root',
     password: 'simba123',
     database: 'minha_escola'
