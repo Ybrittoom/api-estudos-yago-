@@ -17,8 +17,9 @@ const pool = mysql.createPool({
 app.use(cors());
 app.use(bodyParser.json());
 
-// Exemplo de rota para buscar todos os instrumentos
-app.get('/instrumentos', (req, res) => {
+// Exemplo de rota para buscar todos os instrutores 
+
+app.get('/instrutores', (req, res) => {
     pool.query('SELECT * FROM instrumentos', (err, results) => {
         if (err) {
             console.error(err);
@@ -29,7 +30,49 @@ app.get('/instrumentos', (req, res) => {
     });
 });
 
-// ... outras rotas para POST, PUT, DELETE e outras tabelas
+
+app.post('/instrutores', async (req, res) => {
+  const { nome, atividade} = req.body; // Adapte os campos conforme sua tabela
+  try {
+    const [result] = await pool.query('INSERT INTO instrutores (nome, atividade) VALUES (?, ?)', [nome, atividade]);
+    res.json({ id: result.insertId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao criar instrutor');
+  }
+});
+
+// Rota para atualizar um instrutor
+app.put('/instrutores/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, atividade } = req.body; // Adapte os campos conforme sua tabela
+  try {
+    const [result] = await pool.query('UPDATE instrutores SET nome = ?, atividade= ? WHERE id = ?', [nome, atividade, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Instrutor não encontrado');
+    }
+    res.send('Instrutor atualizado com sucesso');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao atualizar instrutor');
+  }
+});
+
+// Rota para deletar um instrutor
+app.delete('/instrutores/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await pool.query('DELETE FROM instrutores WHERE id = ?', [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Instrutor não encontrado');
+    }
+    res.send('Instrutor deletado com sucesso');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao deletar instrutor');
+  }
+});
+
 
 app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
