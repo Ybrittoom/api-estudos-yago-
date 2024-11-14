@@ -20,57 +20,6 @@ app.use(express.json());
 
 // Rotas para Instrumentos
 
-// Rota para obter todos os registros
-app.get('/instrumentos', (req, res) => {
-  pool.query('SELECT * FROM instrumentos', (err, results) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Erro ao buscar usuários');
-    } else {
-      res.json(results);
-    }
-  });
-});
-
-// Rota para criar um novo registro
-app.post('/instrumentos', (req, res) => {
-  const { nome, tipo } = req.body;
-  pool.query('INSERT INTO instrumentos (nome,tipo) VALUES (?, ?)', [nome, tipo], (err, result) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Erro ao criar usuário');
-    } else {
-      res.json({ id: result.insertId });
-    }
-  });
-});
-
-// Rota para atualizar um registro
-app.put('/instrumentos/:id', (req, res) => {
-  const { id } = req.params;
-  const { nome, tipo } = req.body;
-  pool.query('UPDATE instrumentos SET nome = ?, tipo = ? WHERE id = ?', [nome, tipo, id], (err, result) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Erro ao atualizar usuário');
-    } else {
-      res.send('Usuário atualizado com sucesso');
-    }
-  });
-});
-
-// Rota para deletar um registro
-app.delete('/instrumentos/:id', (req, res) => {
-  const { id } = req.params;
-  pool.query('DELETE FROM users WHERE id = ?', [id], (err, result) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Erro ao deletar usuário');
-    } else {
-      res.send('Usuário deletado com sucesso');
-    }
-  });
-});
 
 
 // Rotas para Instrumentos
@@ -127,7 +76,7 @@ app.delete('/instrumentos/:id', async (req, res) => {
   }
 });
 
-/*
+
 
 // Rotas para Alunos
 
@@ -197,7 +146,7 @@ app.delete('/instrutores/:id', async (req, res) => {
   }
 });
 
-/*
+
 //Instrutores 
 
 app.post('/instrutores', async (req, res) => {
