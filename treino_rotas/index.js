@@ -18,8 +18,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
-// Rotas para Instrumentos
-
 
 
 // Rotas para Instrumentos
