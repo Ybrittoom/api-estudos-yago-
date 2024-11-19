@@ -82,11 +82,11 @@ app.get('/alunos/:id', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM alunos WHERE id = ?', [req.params.id]);
     if (rows.length === 0) {
-      return res.status(404).json({ message: 'Instrumento não encontrado' });
+      return res.status(404).json({ message: 'aluno não encontrado' });
     }
     res.json(rows[0]);
   } catch (error) {
-    console.error('Erro ao buscar instrumento:', error);
+    console.error('Erro ao buscar aluno:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -114,7 +114,7 @@ app.put('/alunos/:id', async (req, res) => {
     res.send('aluno atualizado com sucesso');
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erro ao atualizar instrutor');
+    res.status(500).send('Erro ao atualizar aluno');
   }
 });
 
@@ -129,7 +129,7 @@ app.delete('/aluno/:id', async (req, res) => {
     res.send('aluno deletado com sucesso');
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erro ao deletar instrutor');
+    res.status(500).send('Erro ao deletar aluno');
   }
 });
 
@@ -203,7 +203,7 @@ app.get('/frequencia', async (req, res) => {
     res.json(rows);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erro ao buscar instrutores');
+    res.status(500).send('Erro ao buscar frequencia');
   }
 });
 
@@ -225,12 +225,12 @@ app.put('/frequencia/:id', async (req, res) => {
   try {
     const [result] = await pool.query('UPDATE frequencia SET nome = ?, faltas = ? WHERE id = ?', [nome, faltas, id]);
     if (result.affectedRows === 0) {
-      return res.status(404).send('Instrutor não encontrado');
+      return res.status(404).send('frequencia não encontrada');
     }
-    res.send('Instrutor atualizado com sucesso');
+    res.send('frequencia atualizado com sucesso');
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erro ao atualizar instrutor');
+    res.status(500).send('Erro ao atualizar frequência');
   }
 });
 
@@ -240,12 +240,12 @@ app.delete('/frequencia/:id', async (req, res) => {
   try {
     const [result] = await pool.query('DELETE FROM frequencia WHERE id = ?', [id]);
     if (result.affectedRows === 0) {
-      return res.status(404).send('Instrutor não encontrado');
+      return res.status(404).send('frequencia não encontrada');
     }
-    res.send('Instrutor deletado com sucesso');
+    res.send('frequencia deletado com sucesso');
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erro ao deletar instrutor');
+    res.status(500).send('Erro ao deletar frequência');
   }
 });
 
