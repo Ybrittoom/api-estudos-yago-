@@ -78,6 +78,19 @@ app.delete('/instrumentos/:id', async (req, res) => {
 
 // Rotas para Alunos
 
+app.get('/alunos/:id', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM alunos WHERE id = ?', [req.params.id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Instrumento não encontrado' });
+    }
+    res.json(rows[0]);
+  } catch (error) {
+    console.error('Erro ao buscar instrumento:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 app.post('/alunos', async (req, res) => {
   try {
     const { nome, idade } = req.body;
@@ -89,6 +102,39 @@ app.post('/alunos', async (req, res) => {
   }
 });
 
+// Rota para atualizar um alunos
+app.put('/alunos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, idade } = req.body; // Adapte os campos conforme sua tabela
+  try {
+    const [result] = await pool.query('UPDATE alunos SET nome = ?, idade = ? WHERE id = ?', [nome, idade, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).send('aluno não encontrado');
+    }
+    res.send('aluno atualizado com sucesso');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao atualizar instrutor');
+  }
+});
+
+// Rota para deletar um aluno 
+app.delete('/aluno/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await pool.query('DELETE FROM alunos WHERE id = ?', [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).send('aluno não encontrado');
+    }
+    res.send('aluno deletado com sucesso');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao deletar instrutor');
+  }
+});
+
+
+//instrutores 
 
 // Rota para obter todos os instrutores
 app.get('/instrutores', async (req, res) => {
@@ -145,21 +191,22 @@ app.delete('/instrutores/:id', async (req, res) => {
 });
 
 
-//Instrutores 
 
-app.post('/instrutores', async (req, res) => {
-  try {
-    const { nome, atividade } = req.body;
-    const [result] = await pool.query('INSERT INTO instrutores (nome, atividade) VALUES (?, ?)', [nome, atividade]);
-    res.status(201).json({ message: 'Instrutor criado com sucesso', id: result.insertId });
-  } catch (error) {
-    console.error('Erro ao criar instrutor:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
-  }
-});
 
  
 // Frequência 
+
+// Rota para obter frequência 
+app.get('/frequencia', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM frequencia');
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao buscar instrutores');
+  }
+});
+
 app.post('/frequencia', async (req, res) => {
   try {
     const { nome, faltas } = req.body;
@@ -170,7 +217,37 @@ app.post('/frequencia', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-*/
+
+// Rota para atualizar frequência 
+app.put('/frequencia/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, faltas } = req.body; // Adapte os campos conforme sua tabela
+  try {
+    const [result] = await pool.query('UPDATE frequencia SET nome = ?, faltas = ? WHERE id = ?', [nome, faltas, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Instrutor não encontrado');
+    }
+    res.send('Instrutor atualizado com sucesso');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao atualizar instrutor');
+  }
+});
+
+// Rota para deletar frequência 
+app.delete('/frequencia/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await pool.query('DELETE FROM frequencia WHERE id = ?', [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Instrutor não encontrado');
+    }
+    res.send('Instrutor deletado com sucesso');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao deletar instrutor');
+  }
+});
 
 app.listen(port, () => {
   console.log(`Servidor ouvindo na porta ${port}`);
