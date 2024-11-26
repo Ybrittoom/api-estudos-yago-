@@ -8,12 +8,18 @@ const port = 3000;
 
 // Configurações do banco de dados
 const pool = mysql.createPool({
-  host: 'localhost',
+  port: 3306,
+  host: '0.0.0.0',
   user: 'root',
-  password: 'simba123',
-  database: 'minha_escola'
+  database: 'minha_escola',
+  waitForConnections: true,
+  connectionLimit: 10,
+  maxIdle: 10, // max idle connections, the default value is the same as `connectionLimit`
+  idleTimeout: 60000, // idle connections timeout, in milliseconds, the default value 60000
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
 });
-
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
@@ -23,11 +29,12 @@ app.use(express.json());
 // Rotas para Instrumentos
 app.get('/instrumentos/:id', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM instrumentos WHERE id = ?', [req.params.id]);
+    const [rows] = await pool.query('SELECT * FROM instrumentos WHERE id = ?', (req.params.id));
     if (rows.length === 0) {
       return res.status(404).json({ message: 'Instrumento não encontrado' });
     }
     res.json(rows[0]);
+    // res.json(rows[0]);
   } catch (error) {
     console.error('Erro ao buscar instrumento:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
@@ -37,8 +44,8 @@ app.get('/instrumentos/:id', async (req, res) => {
 
 app.post('/instrumentos', async (req, res) => {
   try {
-    const { nome, tipo } = req.body;
-    const [result] = await pool.query('INSERT INTO instrumentos (nome, tipo) VALUES (?, ?)', [nome, tipo]);
+    const { nome, tipo, modelo, marca } = req.body;
+    const [result] = await pool.query('INSERT INTO instrumentos (nome, tipo, modelo, marca) VALUES (?, ?, ?, ?)', [nome, tipo, modelo, marca]);
     res.status(201).json({ message: 'Instrumento criado com sucesso', id: result.insertId });
   } catch (error) {
     console.error('Erro ao criar instrumento:', error);
@@ -49,8 +56,8 @@ app.post('/instrumentos', async (req, res) => {
 
 app.put('/instrumentos/:id', async (req, res) => {
   try {
-    const { nome, tipo } = req.body;
-    const [result] = await pool.query('UPDATE instrumentos SET nome = ?, tipo = ? WHERE id = ?', [nome, tipo, req.params.id]);
+    const { nome, tipo, modelo, marca } = req.body;
+    const [result] = await pool.query('UPDATE instrumentos SET nome = ?, tipo = ?, modelo = ?, marca = ? WHERE id = ?', [nome, tipo, modelo, marca, req.params.id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Instrumento não encontrado' });
     }
@@ -93,8 +100,8 @@ app.get('/alunos/:id', async (req, res) => {
 
 app.post('/alunos', async (req, res) => {
   try {
-    const { nome, idade } = req.body;
-    const [result] = await pool.query('INSERT INTO alunos (nome, idade) VALUES (?, ?)', [nome, idade]);
+    const { nome, idade, endereco} = req.body;
+    const [result] = await pool.query('INSERT INTO alunos (nome, idade, endereco) VALUES (?, ?, ?)', [nome, idade, endereco]);
     res.status(201).json({ message: 'Aluno criado com sucesso', id: result.insertId });
   } catch (error) {
     console.error('Erro ao criar o aluno:', error);
@@ -105,9 +112,9 @@ app.post('/alunos', async (req, res) => {
 // Rota para atualizar um alunos
 app.put('/alunos/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, idade } = req.body; // Adapte os campos conforme sua tabela
+  const { nome, idade, endereco } = req.body; // Adapte os campos conforme sua tabela
   try {
-    const [result] = await pool.query('UPDATE alunos SET nome = ?, idade = ? WHERE id = ?', [nome, idade, id]);
+    const [result] = await pool.query('UPDATE alunos SET nome = ?, idade = ?, endereco = ? WHERE id = ?', [nome, idade, endereco, id]);
     if (result.affectedRows === 0) {
       return res.status(404).send('aluno não encontrado');
     }
@@ -149,9 +156,9 @@ app.get('/instrutores', async (req, res) => {
 
 // Rota para criar um novo instrutor
 app.post('/instrutores', async (req, res) => {
-  const { nome, atividade} = req.body; // Adapte os campos conforme sua tabela
+  const { nome, atividade, idade, endereco, instrumento_especialidade_id} = req.body; // Adapte os campos conforme sua tabela
   try {
-    const [result] = await pool.query('INSERT INTO instrutores (nome, atividade) VALUES (?, ?)', [nome, atividade]);
+    const [result] = await pool.query('INSERT INTO instrutores (nome, atividade, idade, endereco, instrumento_especialidade_id) VALUES (?, ?, ?, ?, ?)', [nome, atividade, idade, endereco, instrumento_especialidade_id]);
     res.json({ id: result.insertId });
   } catch (error) {
     console.error(error);
@@ -162,9 +169,9 @@ app.post('/instrutores', async (req, res) => {
 // Rota para atualizar um instrutor
 app.put('/instrutores/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, atividade } = req.body; // Adapte os campos conforme sua tabela
+  const { nome, atividade, idade, endereco, instrumento_especialidade_id} = req.body; // Adapte os campos conforme sua tabela
   try {
-    const [result] = await pool.query('UPDATE instrutores SET nome = ?, atividade = ? WHERE id = ?', [nome, atividade, id]);
+    const [result] = await pool.query('UPDATE instrutores SET nome = ?, atividade = ?, idade = ?, endereco = ?, instrumento_especialidade_id WHERE id = ?', [nome, atividade, idade, endereco, instrumento_especialidade_id, id]);
     if (result.affectedRows === 0) {
       return res.status(404).send('Instrutor não encontrado');
     }
@@ -193,7 +200,6 @@ app.delete('/instrutores/:id', async (req, res) => {
 
 
 
- 
 // Frequência 
 
 // Rota para obter frequência 
@@ -209,8 +215,8 @@ app.get('/frequencia', async (req, res) => {
 
 app.post('/frequencia', async (req, res) => {
   try {
-    const { nome, faltas } = req.body;
-    const [result] = await pool.query('INSERT INTO frequencia (nome, faltas) VALUES (?, ?)', [nome, faltas]);
+    const { nome, faltas, data_hora, instrumento_id, aluno_id, instrutor_id } = req.body;
+    const [result] = await pool.query('INSERT INTO frequencia (nome, faltas, data_hora, instrumento_id, aluno_id, instrutor_id) VALUES (?, ?, ?, ?, ?, ?)', [nome, faltas, data_hora, instrumento_id, aluno_id, instrutor_id]);
     res.status(201).json({ message: 'frequência criado com sucesso', id: result.insertId });
   } catch (error) {
     console.error('Erro ao criar frequencia:', error);
@@ -221,9 +227,9 @@ app.post('/frequencia', async (req, res) => {
 // Rota para atualizar frequência 
 app.put('/frequencia/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, faltas } = req.body; // Adapte os campos conforme sua tabela
+  const { nome, faltas, data_hora, instrumento_id, aluno_id, instrutor_id } = req.body; // Adapte os campos conforme sua tabela
   try {
-    const [result] = await pool.query('UPDATE frequencia SET nome = ?, faltas = ? WHERE id = ?', [nome, faltas, id]);
+    const [result] = await pool.query('UPDATE frequencia SET nome = ?, faltas = ?, data_hora = ?, instrumento_id = ?, aluno_id = ?, instrutor_id = ? WHERE id = ?', [nome, faltas,data_hora, instrumento_id, aluno_id, instrutor_id, id]);
     if (result.affectedRows === 0) {
       return res.status(404).send('frequencia não encontrada');
     }
@@ -249,6 +255,6 @@ app.delete('/frequencia/:id', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Servidor ouvindo na porta ${port}`);
+app.listen(port, async () => {
+  console.log(`Servidor ouvindo em http://localhost:${port}`);
 });

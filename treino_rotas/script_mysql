@@ -1,0 +1,54 @@
+CREATE DATABASE minha_escola;
+USE minha_escola;
+
+CREATE TABLE instrumentos (
+    id INT not null AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255),
+    tipo VARCHAR(255),
+    modelo varchar(100),
+    marca varchar(100)
+);
+
+CREATE TABLE alunos (
+    id INT not null AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255),
+    idade int,
+    endereco text
+);
+
+CREATE TABLE instrutores (
+    id INT not null AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255),
+    atividade VARCHAR(255),
+    idade INT,
+    endereco text,
+    instrumento_especialidade_id int,
+    FOREIGN key (instrumento_especialidade_id) REFERENCES instrumentos(id)
+);
+
+CREATE TABLE frequencia (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255),
+    faltas VARCHAR(255),
+    data_hora varchar(255),
+    instrumento_id int,
+    aluno_id int,
+    instrutor_id int,
+    FOREIGN KEY (instrumento_id) REFERENCES instrumentos(id),
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id),
+    FOREIGN KEY (instrutor_id) REFERENCES instrutores(id)
+);
+
+
+
+
+
+SELECT * FROM instrumentos i 
+
+SELECT * FROM alunos a
+
+SELECT * FROM instrutores i 
+
+SELECT * FROM frequencia f 
+
+

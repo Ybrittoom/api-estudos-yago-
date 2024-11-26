@@ -1,0 +1,24 @@
+E vão adicionar os seguintes campos...
+
+Na tabela de instrumentos:
+* tipo
+* modelo
+* marca
+
+
+Na Tabela de alunos:
+* idade
+* endereco
+
+
+Na Tabela de instrutores:
+* idade
+* endereco
+* instrumento de especialidade
+
+
+Na Tabela de frequência: 
+* data (data e hora da aula)
+* instrumento (somente instrumentos cadastrados na tabela de instrumentos) 
+* aluno ( somente alunos cadastrados na tabela de alunos)
+* instrutor (somente instritor cadastrado na tabela de instrutores)
