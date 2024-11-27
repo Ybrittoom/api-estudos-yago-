@@ -126,10 +126,10 @@ app.put('/alunos/:id', async (req, res) => {
 });
 
 // Rota para deletar um aluno 
-app.delete('/aluno/:id', async (req, res) => {
+app.delete('/alunos/:id', async (req, res) => { //tinha um erro no caminho, era o certo e "alunos" e estava "aluno"
   const { id } = req.params;
   try {
-    const [result] = await pool.query('DELETE FROM alunos WHERE id = ?', [id]);
+    const [result] = await pool.query('DELETE FROM alunos WHERE id = ?', [req.params.id]);
     if (result.affectedRows === 0) {
       return res.status(404).send('aluno não encontrado');
     }
@@ -171,7 +171,7 @@ app.put('/instrutores/:id', async (req, res) => {
   const { id } = req.params;
   const { nome, atividade, idade, endereco, instrumento_especialidade_id} = req.body; // Adapte os campos conforme sua tabela
   try {
-    const [result] = await pool.query('UPDATE instrutores SET nome = ?, atividade = ?, idade = ?, endereco = ?, instrumento_especialidade_id WHERE id = ?', [nome, atividade, idade, endereco, instrumento_especialidade_id, id]);
+    const [result] = await pool.query('UPDATE instrutores SET nome = ?, atividade = ?, idade = ?, endereco = ?, instrumento_especialidade_id = ? WHERE id = ?', [nome, atividade, idade, endereco, instrumento_especialidade_id, id]);
     if (result.affectedRows === 0) {
       return res.status(404).send('Instrutor não encontrado');
     }
